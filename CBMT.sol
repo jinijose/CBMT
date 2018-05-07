@@ -1,10 +1,13 @@
 pragma solidity ^0.4.17;
-//import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
-contract CBMT{
+contract CBMT is usingOraclize{
     string[] currencys;
     uint256 tid;
     mapping(uint256 => tran) _trans;
+    bool public called = false;
+    string public res;
+    uint256 public uprice;
     
     struct tran{
         uint256 id;
@@ -41,17 +44,20 @@ contract CBMT{
         
         //DieselPriceUSD = parseInt(result, 2); // let's save it as $ cents
         // do something with the USD Diesel price
+        called = true ;
+        res =  result;
+        uprice = parseInt(result,2);
     }
     function showString(bytes32 x) public view returns(string){
         return bytes32ToString(x);
     }
-    function getRate(string sourceCurrency, string destCurrency) payable {
+    function getRate(string sourceCurrency, string destCurrency, string URL) payable {
         //string memory sCur;
         //string memory dCur;
         //sCur = bytes32ToString(sourceCurrency);
         //dCur = bytes32ToString(destCurrency);
         //newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-        //oraclize_query("URL", "xml(http://free.currencyconverterapi.com/api/v5/convert?q=USD_INR&compact=y");
+        oraclize_query("URL", URL);
     }
     function isExists(string[] _arr, string _what) pure private returns (bool) {
         for (uint i = 0; i < _arr.length; i++) {
