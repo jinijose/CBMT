@@ -6,8 +6,10 @@ contract CBMT is usingOraclize{
     uint256 tid;
     mapping(uint256 => tran) _trans;
     bool public called = false;
-    string public res;
+    uint pricePosition = 0;
     uint256 public uprice;
+    mapping(address => uint256) _balances;
+    mapping(uint256 => tran) _toTransfer;
     
     struct tran{
         uint256 id;
@@ -16,6 +18,7 @@ contract CBMT is usingOraclize{
         bytes32 destCurrency;
         bytes32 value;
         bytes32 conversionRate;
+        bool completed;
         
     }
     function CBMT() public {
@@ -23,7 +26,15 @@ contract CBMT is usingOraclize{
         currencys.push("INR");
         currencys.push("EUR");
     }
-    
+    function getBalance() public returns(uint256){
+        return msg.sender.balance;
+    }
+    function updateBalance(uint256 value) public returns(bool){
+        _balances[msg.sender] = _balances[msg.sender] + value;
+    }
+    function updatePricePosition(uint p) public returns(bool){
+        pricePosition = p;
+    }
     function addNewCurrency(string cname) public returns(bool){
         require(!isExists(currencys,cname));
         currencys.push(cname);
@@ -36,17 +47,14 @@ contract CBMT is usingOraclize{
         require(isExists(currencys,sourceCurrency));
         require(isExists(currencys,destCurrency));
         
-        
     }
     
     function __callback(bytes32 myid, string result) {
         //if (msg.sender != oraclize_cbAddress()) throw;
-        
-        //DieselPriceUSD = parseInt(result, 2); // let's save it as $ cents
-        // do something with the USD Diesel price
         called = true ;
-        res =  result;
-        uprice = parseInt(result,2);
+        
+        uprice = parseInt(result,pricePosition);
+        
     }
     function showString(bytes32 x) public view returns(string){
         return bytes32ToString(x);
