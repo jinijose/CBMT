@@ -58,14 +58,14 @@ contract CBMT is usingOraclize {
         return currencies_list;
     }
     
-    function TransferMoney(address to, uint256 value, string sourceCurrency, string destCurrency, uint rate) public returns(bool){
+    function TransferMoney(address to, uint256 value, string sourceCurrency, string destCurrency, uint to_receive) public returns(bool){
         require(currencies[sourceCurrency]);
         require(currencies[destCurrency]);
         require(_balances[msg.sender][sourceCurrency] >= value);
         // http://free.currencyconverterapi.com/api/v5/convert?q=USD_INR&compact=y
         // string memory URL = strConcat("http://free.currencyconverterapi.com/api/v5/convert?q=", destCurrency, "_", sourceCurrency, "&compact=y");
         // getRate(sourceCurrency, destCurrency, URL);
-        uint to_receive = value/rate;
+        // uint to_receive = value/rate;
         _balances[msg.sender][sourceCurrency] -= value;
         _balances[to][destCurrency] += to_receive;
         Transferred(msg.sender, to, sourceCurrency, value, destCurrency, to_receive);
